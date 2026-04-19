@@ -1,0 +1,202 @@
+\documentclass[10pt, a4paper]{article}
+
+% --- HYBRID PREAMBLE BLOCK (Ensures compilation on all engines) ---
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{lmodern}
+  \renewcommand{\familydefault}{\sfdefault}
+  \usepackage[english]{babel}
+\else
+  \usepackage{fontspec}
+  \usepackage[english, bidi=basic, provide=*]{babel}
+  \babelfont{rm}{Latin Modern Sans}
+\fi
+
+% --- Page Setup ---
+\usepackage[a4paper, top=0.75cm, bottom=0.75cm, left=1.27cm, right=1.27cm]{geometry}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage{setspace}
+\setstretch{0.97}
+
+% =============================================================================
+% TEMPLATE TOGGLE INSTRUCTIONS
+% =============================================================================
+% This resume template is designed for quick tailoring to three role families:
+%
+%   [SYSTEMS]    — Systems / Infrastructure / Backend / Security / Rust roles
+%                   (also used for general Software Engineering roles)
+%   [ML/AI]      — Machine Learning / AI / Data Engineering roles
+%   [FULLSTACK]  — Full-Stack / Frontend / Web Development roles
+%
+% Bullets follow Google's XYZ formula:
+%   "Accomplished [X] as measured by [Y] by doing [Z]"
+%   — lead with the measurable accomplishment, then the mechanism.
+% =============================================================================
+
+% --- Custom Commands (from user source) ---
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1}
+  }
+}
+
+\newcommand{\resumeEducationHeading}[5]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{\linewidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+      \textit{\small GPA: #5} & \\
+    \end{tabular*}\vspace{-2pt}
+}
+
+\newcommand{\resumeExperienceHeading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{\linewidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-2pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabularx}{\linewidth}{@{}X r@{}}
+      \small#1 & \small#2 \\
+    \end{tabularx}\vspace{-2pt}
+}
+
+\renewcommand\labelitemii{\textbullet}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0pt, label={}, nosep, topsep=0pt]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}[nosep, topsep=1pt, leftmargin=0.15in]}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-4pt}}
+
+% Section formatting (ATS-friendly: no horizontal rules, no small caps)
+\titleformat{\section}{
+  \vspace{-5pt}\raggedright\large\bfseries\MakeUppercase
+}{}{0em}{}[\vspace{-5pt}]
+
+\hypersetup{hidelinks}
+
+\begin{document}
+
+%----------HEADER----------
+\noindent\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+  \textbf{\LARGE Lucas Ho} & \textbf{\large Software Engineer} \\
+\end{tabular*}
+\vspace{2pt}
+\noindent\small\href{mailto:lucas.t.ho.lh@gmail.com}{lucas.t.ho.lh@gmail.com} \textbar{}
+870-897-4995 \textbar{} \href{https://github.com/lucastimho}{GitHub} \textbar{} \href{https://www.linkedin.com/in/lucas-t-ho/}{LinkedIn} \textbar{} \href{https://lucasho.dev}{lucasho.dev}
+
+\vspace{4pt}
+
+%-----------TECHNICAL SKILLS-----------
+\section{Technical Skills}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+     \textbf{Languages}{: Rust, Python, C/C++, JavaScript, SQL, Java, Swift} \\
+     \textbf{Frameworks}{: Axum, Tokio, Wasmtime, FastAPI, React, Node.js, Actix-Web} \\
+     \textbf{Databases/Tools}{: Postgres, MongoDB, MySQL, Redis, Git, GitHub, Docker, Linux, Prometheus, OPA} \\
+     \textbf{Others}{: WebAssembly/WASI, seccomp BPF, Async/Await, Concurrency, Lock-Free Architecture, Ed25519, APIs, CI/CD}
+    }}
+ \end{itemize}
+
+%-----------EDUCATION-----------
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeEducationHeading
+      {University of Oklahoma}{Norman, OK}
+      {Master of Science in Computer Science}{August 2024 -- May 2026}
+      {4.0}
+    \resumeEducationHeading
+      {University of Oklahoma}{Norman, OK}
+      {Bachelor of Science in Computer Science}{Jan 2023 -- May 2025}
+      {3.79}
+  \resumeSubHeadingListEnd
+
+%-----------EXPERIENCE-----------
+\section{Professional Experience}
+  \resumeSubHeadingListStart
+    \resumeExperienceHeading
+        {Applied Research Laboratory}{Austin, TX}
+        {Machine Learning Research Intern}{June 2025 -- August 2025}
+        \resumeItemListStart
+            \resumeItem{Eliminated the manual signal-review bottleneck in U.S. Navy Power Spectral Density (PSD) analysis by engineering a custom deep-learning architecture that automated object detection across PSD captures.}
+            \resumeItem{Drove reproduction error below \textbf{0.01\%} on clean PSD data by implementing advanced preprocessing pipelines and tuning model hyperparameters across iterative training runs.}
+            \resumeItem{Influenced downstream research direction across senior-scientist review by delivering a final model with a comprehensive performance analysis that translated complex findings into actionable decisions.}
+        \resumeItemListEnd
+    \resumeExperienceHeading
+      {University of Oklahoma}{Norman, OK}
+      {Teaching Assistant, Computer Organization}{Jan 2025 -- May 2025}
+      \resumeItemListStart
+        \resumeItem{Strengthened undergraduate command of memory hierarchy and I/O design by leading 1:1 and group tutoring sessions throughout the semester.}
+        \resumeItem{Sustained consistent learning loops across the cohort by grading assignments, quizzes, and exams with timely, constructive feedback.}
+      \resumeItemListEnd
+  \resumeSubHeadingListEnd
+
+%-----------PROJECTS-----------
+\section{Selected Projects}
+    \resumeSubHeadingListStart
+
+      % =====================================================================
+      % PROJECT: Isolated Virtual WASM Manager
+      % =====================================================================
+      \resumeProjectHeading
+          {\textbf{Isolated Virtual WASM Manager} \textbar{} \emph{Rust, Wasmtime, Tokio, Axum, WASI, seccomp BPF}}{\small\href{https://github.com/lucastimho/isolator-v-wasm-sandbox}{github.com/lucastimho/isolator-v-wasm-sandbox}}
+          \resumeItemListStart
+            \resumeItem{Achieved \textbf{9,685 req/s} sustained throughput at \textbf{P99 19ms} latency by engineering a 5,130-line Rust runtime that executes untrusted WASM payloads in fully isolated, ephemeral sandboxes with sub-20ms cold starts across 50 pre-warmed concurrent slots.}
+            \resumeItem{Eliminated host filesystem exposure entirely by implementing a 5-layer defense-in-depth security model: seccomp BPF syscall filtering (67 allowed, 18 kill-on-invoke), OCAP SessionPolicy with 19 WASI capabilities, BTreeMap-backed virtual filesystem with per-fd capability rights and 64MB write quotas, dual-layer memory enforcement (50MB cap + RSS watchdog), and a 16-pattern compiled regex PII scrubber.}
+            \resumeItem{Improved API throughput \textbf{5.4\texttimes{}} (1,780 \textrightarrow{} 9,685 req/s) and reduced P99 latency \textbf{13\texttimes{}} (249ms \textrightarrow{} 19ms) by replacing a blocking thread::sleep inside a hot-path mutex with a lock-free architecture: background tokio sampler at 500ms intervals, read-biased RwLock snapshot reads, and RAII AdmissionTicket for real-time pool utilization tracking.}
+            \resumeItem{Eliminated all guest-to-host filesystem access by intercepting 6 WASI syscalls via Wasmtime's Linker::func\_wrap\_async, routing I/O through an in-memory VFS with path traversal rejection and 256-fd limit, and streaming stdout to clients over SSE via 256KB ring buffers draining every 20ms.}
+          \resumeItemListEnd
+
+      % =====================================================================
+      % PROJECT: APEX-Pay --- Zero-Trust AI Agent Execution Gateway
+      % =====================================================================
+      \resumeProjectHeading
+          {\textbf{APEX-Pay: Zero-Trust AI Agent Execution Gateway} \textbar{} \emph{Python, FastAPI, PostgreSQL, OPA, Redis, Ed25519, React, SSE}}{\small\href{https://github.com/lucastimho/apex-pay}{github.com/lucastimho/apex-pay}}
+          \resumeItemListStart
+            \resumeItem{Delivered \textbf{sub-200ms} hot-path decision latency (verified by \textbf{138 passing tests} across 10 suites) by architecting a policy-gated execution gateway in FastAPI/PostgreSQL that authorizes AI tool-calls through a 5-stage fail-closed pipeline: SHA-256 intent canonicalization, semantic risk classifier, OPA policy engine with embedded Python fallback, scoped ephemeral credential issuance, and Ed25519-signed execution receipts.}
+            \resumeItem{Achieved \textbf{sub-100ms} tail latency from audit-log write to browser-rendered dashboard update by eliminating Supabase connection-pool exhaustion under concurrent SSE clients --- engineered a single-connection PostgreSQL LISTEN/NOTIFY broker per uvicorn worker with asyncio.Queue fanout.}
+            \resumeItem{Made the audit trail offline-verifiable and tamper-resistant by enforcing append-only semantics at two layers --- three least-privilege PostgreSQL roles (apex\_gateway, apex\_auditor, apex\_readonly) with segregated DSNs, plus a trg\_audit\_no\_update trigger rejecting UPDATE/DELETE --- and emitting Ed25519-signed receipts for every authorization decision.}
+          \resumeItemListEnd
+
+      % =====================================================================
+      % PROJECT: Hacklahoma: Peak Performance
+      % =====================================================================
+      \resumeProjectHeading
+          {\textbf{Hacklahoma: Peak Performance}}{\textbf{Best Beginners Winner}}
+          \resumeItemListStart
+            \resumeItem{Shipped a functional iPad AI coach in 24 hours by architecting a multi-modal pipeline for real-time video/voice metrics while mentoring 4 novice hackers.}
+            \resumeItem{Sustained a responsive UI under concurrent audio and vision model inference by optimizing asynchronous workloads with Swift Actors and Async/Await.}
+          \resumeItemListEnd
+
+      % =====================================================================
+      % PROJECT: NBA Player Archetype Clustering System
+      % =====================================================================
+      \resumeProjectHeading
+          {\textbf{NBA Player Archetype Clustering System}}{}
+          \resumeItemListStart
+            \resumeItem{Reached scikit-learn-competitive clustering throughput by engineering K-Means and Agglomerative algorithms from scratch in NumPy with vectorized dot-product broadcasting.}
+            \resumeItem{Surfaced distinct player archetypes across 19+ statistical metrics by applying PCA and StandardScaler within a greedy trait-matching pipeline.}
+            \resumeItem{Validated cluster quality against scikit-learn baselines via a Streamlit dashboard benchmarking Silhouette and Davies-Bouldin scores.}
+          \resumeItemListEnd
+
+      % =====================================================================
+      % PROJECT: HackUTD XI: ToyoTrends
+      % =====================================================================
+      \resumeProjectHeading
+          {\textbf{HackUTD XI Project: ToyoTrends}}{\textbf{Second Place Winner}}
+          \resumeItemListStart
+            \resumeItem{Shipped a multi-vehicle carbon emission analysis tool in under 24 hours by integrating CarsXE and SambaNova AI APIs into a React.js web application.}
+            \resumeItem{Surfaced actionable environmental insights by implementing dynamic Chart.js visualizations of multi-vehicle emission data.}
+          \resumeItemListEnd
+    \resumeSubHeadingListEnd
+
+\end{document}
