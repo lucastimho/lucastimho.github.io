@@ -14,12 +14,6 @@ const PROJECTS: Project[] = [
     tags: ['Swift', 'Vision', 'WhisperKit'],
   },
   {
-    title: 'NBA Player Archetypes',
-    description:
-      'K-Means and Agglomerative clustering written from scratch in NumPy; PCA + greedy trait-matching across 19+ metrics.',
-    tags: ['Python', 'NumPy', 'Streamlit'],
-  },
-  {
     title: 'ToyoTrends',
     badge: 'HackUTD XI · 2nd Place',
     description:
@@ -30,7 +24,7 @@ const PROJECTS: Project[] = [
 
 export function SecondaryProjects() {
   return (
-    <div className="grid gap-4 md:grid-cols-3">
+    <div className="grid gap-4 md:grid-cols-2">
       {PROJECTS.map((p) => (
         <article
           key={p.title}
