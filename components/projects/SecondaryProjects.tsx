@@ -10,8 +10,14 @@ const PROJECTS: Project[] = [
     title: 'Peak Performance',
     badge: 'Hacklahoma · Best Beginners',
     description:
-      'iPad AI coach built in 24h — multi-modal vision + voice pipeline kept responsive with Swift Actors and async/await.',
+      'iPad AI coach built in 24h — multi-modal vision + voice pipeline kept responsive with Swift Actors and async/await. Mentored a team of developers with no prior programming experience.',
     tags: ['Swift', 'Vision', 'WhisperKit'],
+  },
+  {
+    title: 'NBA Player Archetypes',
+    description:
+      'K-Means and Agglomerative clustering written from scratch in NumPy; PCA + greedy trait-matching across 19+ metrics.',
+    tags: ['Python', 'NumPy', 'Streamlit'],
   },
   {
     title: 'ToyoTrends',
@@ -24,7 +30,7 @@ const PROJECTS: Project[] = [
 
 export function SecondaryProjects() {
   return (
-    <div className="grid gap-4 md:grid-cols-2">
+    <div className="grid gap-4 md:grid-cols-3">
       {PROJECTS.map((p) => (
         <article
           key={p.title}
