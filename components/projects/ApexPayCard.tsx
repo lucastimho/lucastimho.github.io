@@ -12,6 +12,25 @@ const METRICS = [
 
 const STACK = ['FastAPI', 'PostgreSQL', 'OPA', 'Redis', 'Ed25519', 'React 19', 'SSE']
 
+const STORY_BEATS: { label: string; text: string }[] = [
+  {
+    label: 'problem',
+    text: 'LLM agents are being handed real authority — payment APIs, database writes, external service calls. The canonical failure: a prompt-injected agent invokes a legitimate tool with adversarial parameters. The ClawSafety paper puts skill-injection attack success at 69.4%.',
+  },
+  {
+    label: 'approach',
+    text: 'A zero-trust gateway between the agent and its tools. Every intent traverses a five-stage fail-closed pipeline — canonicalize, risk score, OPA policy, scoped credential, Ed25519 receipt — before any action is taken. An embedded Python mirror of the Rego policy means the OPA sidecar going down can never accidentally open the deny path.',
+  },
+  {
+    label: 'built',
+    text: 'FastAPI gateway · three least-privilege Postgres roles (write path can\'t read, read path can\'t write) · append-only audit log with pg_notify streaming every decision live to a React dashboard via SSE · HITL escalation queue for high-entropy risk scores · 138 tests, all green.',
+  },
+  {
+    label: 'result',
+    text: '< 200ms hot-path decision · < 100ms audit-to-dashboard tail latency · every approved action produces an Ed25519 receipt verifiable offline — no database round-trip required.',
+  },
+]
+
 export function ApexPayCard() {
   const reduce = useReducedMotion()
 
@@ -21,43 +40,9 @@ export function ApexPayCard() {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-80px' }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className="group relative isolate font-sans"
+      className="group relative font-sans"
     >
-      <div className="pointer-events-none absolute -inset-12 -z-10 overflow-hidden">
-        <motion.div
-          aria-hidden
-          animate={reduce ? undefined : { rotate: 360 }}
-          transition={{ duration: 32, repeat: Infinity, ease: 'linear' }}
-          className="absolute inset-0"
-          style={{
-            background:
-              'conic-gradient(from 0deg at 50% 50%, rgba(0,127,255,0.40), rgba(0,127,255,0) 28%, rgba(122,181,255,0.30) 52%, rgba(0,127,255,0) 76%, rgba(0,127,255,0.40))',
-            filter: 'blur(70px)',
-          }}
-        />
-        <motion.div
-          aria-hidden
-          animate={reduce ? undefined : { scale: [1, 1.12, 1], opacity: [0.45, 0.85, 0.45] }}
-          transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute inset-x-16 top-10 h-44 rounded-full"
-          style={{
-            background: 'radial-gradient(closest-side, rgba(0,127,255,0.55), transparent 70%)',
-            filter: 'blur(45px)',
-          }}
-        />
-        <motion.div
-          aria-hidden
-          animate={reduce ? undefined : { scale: [1.05, 1, 1.05], opacity: [0.3, 0.6, 0.3] }}
-          transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
-          className="absolute inset-x-32 bottom-8 h-40 rounded-full"
-          style={{
-            background: 'radial-gradient(closest-side, rgba(122,181,255,0.45), transparent 70%)',
-            filter: 'blur(50px)',
-          }}
-        />
-      </div>
-
-      <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#070b1a]/60 backdrop-blur-2xl shadow-[0_30px_60px_-20px_rgba(0,0,0,0.7)]">
+      <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#070b1a]/60 backdrop-blur-2xl shadow-[0_0_0_1px_rgba(0,127,255,0.05),0_30px_60px_-20px_rgba(0,0,0,0.7)] transition-shadow duration-500 group-hover:shadow-[0_0_0_1px_rgba(0,127,255,0.25),0_0_60px_-10px_rgba(0,127,255,0.4),0_30px_60px_-20px_rgba(0,0,0,0.7)]">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#007FFF]/50 to-transparent" />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.05] via-transparent to-transparent" />
 
@@ -76,10 +61,22 @@ export function ApexPayCard() {
               <h3 className="mt-3 text-[28px] font-semibold leading-none tracking-tight text-white">
                 APEX<span className="mx-0.5 text-[#7ab5ff]">·</span>Pay
               </h3>
-              <p className="mt-3 max-w-md text-[13.5px] leading-relaxed text-white/65">
-                Policy-gated execution gateway for AI agents — every tool-call routed through a
-                fail-closed pipeline before scoped, ephemeral credentials are issued.
-              </p>
+              <div className="mt-4 space-y-4">
+                {STORY_BEATS.map((beat, i) => (
+                  <motion.div
+                    key={beat.label}
+                    initial={reduce ? false : { opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-40px' }}
+                    transition={{ delay: i * 0.09, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <div className="mb-1 text-[10px] font-medium uppercase tracking-[0.2em] text-[#7ab5ff]/70">
+                      {beat.label}
+                    </div>
+                    <p className="text-[12.5px] leading-relaxed text-white/55">{beat.text}</p>
+                  </motion.div>
+                ))}
+              </div>
             </div>
 
             <a

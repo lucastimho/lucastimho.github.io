@@ -18,6 +18,25 @@ const METRICS = [
 
 const TAGS = ['rust', 'wasmtime', 'tokio', 'axum', 'wasi', 'seccomp-bpf']
 
+const STORY_BEATS: { label: string; text: string }[] = [
+  {
+    label: 'problem',
+    text: 'AI agents need to run untrusted code at scale. Most sandboxes rely on a single enforcement boundary — one bypass and the host is exposed.',
+  },
+  {
+    label: 'approach',
+    text: 'Five independent layers: seccomp BPF at the kernel, OCAP capability policy at the WASI call site, an in-memory VFS for zero host filesystem exposure, a Wasmtime ResourceLimiter that vetoes memory growth, and a regex scrubber on all output. One layer down, four still standing.',
+  },
+  {
+    label: 'built',
+    text: '5,130 lines of Rust — a Wasmtime pool of 50 pre-warmed sandboxes backed by Tokio, a Go orchestrator for load distribution, and a Next.js frontend with an in-browser Rust→WASM compiler so users can write and run code without a local toolchain.',
+  },
+  {
+    label: 'result',
+    text: '9,685 req/s sustained · P99 < 19ms · cold starts under 20ms. Lock-free back-pressure sheds load before saturation with calibrated Retry-After responses at three CPU thresholds.',
+  },
+]
+
 export function IsolatorVCard() {
   const reduce = useReducedMotion()
 
@@ -57,10 +76,22 @@ export function IsolatorVCard() {
       <div className="relative space-y-6 px-6 py-7 text-[13px] leading-relaxed text-white/70">
         <div className="font-sans">
           <h3 className="text-[20px] font-medium tracking-tight text-white">Isolator-V</h3>
-          <p className="mt-1.5 text-[13px] leading-relaxed text-white/55">
-            A 5,130-line Rust runtime executing untrusted WASM payloads in fully isolated, ephemeral
-            sandboxes — five layers of defense, sub-20ms cold starts.
-          </p>
+          <div className="mt-4 space-y-4">
+            {STORY_BEATS.map((beat, i) => (
+              <motion.div
+                key={beat.label}
+                initial={reduce ? false : { opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ delay: i * 0.09, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="mb-1 text-[10px] font-medium uppercase tracking-[0.2em] text-accent-light/70">
+                  {beat.label}
+                </div>
+                <p className="text-[12.5px] leading-relaxed text-white/55">{beat.text}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
 
         <div className="space-y-1.5">

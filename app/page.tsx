@@ -2,6 +2,7 @@ import { Starfield } from '@/components/Starfield'
 import { Experience } from '@/components/Experience'
 import { IsolatorVCard } from '@/components/projects/IsolatorVCard'
 import { ApexPayCard } from '@/components/projects/ApexPayCard'
+import { ProjectsBackdrop } from '@/components/ProjectsBackdrop'
 import { SecondaryProjects } from '@/components/projects/SecondaryProjects'
 
 export default function Home() {
@@ -97,9 +98,12 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="grid gap-8 lg:grid-cols-2">
-            <IsolatorVCard />
-            <ApexPayCard />
+          <div className="relative isolate">
+            <ProjectsBackdrop />
+            <div className="grid gap-8 lg:grid-cols-2">
+              <IsolatorVCard />
+              <ApexPayCard />
+            </div>
           </div>
         </section>
 
@@ -113,7 +117,7 @@ export default function Home() {
               also shipped
             </div>
             <h2 className="mt-2 text-[20px] font-medium tracking-tight text-white/85">
-              Hackathon wins & research projects
+              Hackathon wins
             </h2>
           </div>
           <SecondaryProjects />
@@ -121,7 +125,7 @@ export default function Home() {
 
         <footer className="mt-32 flex items-center justify-between border-t border-white/5 pt-6 text-[11px] text-white/35">
           <span>© {new Date().getFullYear()} Lucas Ho</span>
-          <span className="font-mono">norman, ok · 36.07°N · 97.04°W</span>
+          <span className="font-mono">olathe, ks</span>
         </footer>
       </div>
     </main>
