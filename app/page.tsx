@@ -117,7 +117,7 @@ export default function Home() {
               also shipped
             </div>
             <h2 className="mt-2 text-[20px] font-medium tracking-tight text-white/85">
-              Hackathon wins
+              Hackathon wins & research projects
             </h2>
           </div>
           <SecondaryProjects />
@@ -125,7 +125,7 @@ export default function Home() {
 
         <footer className="mt-32 flex items-center justify-between border-t border-white/5 pt-6 text-[11px] text-white/35">
           <span>© {new Date().getFullYear()} Lucas Ho</span>
-          <span className="font-mono">olathe, ks</span>
+          <span className="font-mono">olathe, ks 39° N, 95° W</span>
         </footer>
       </div>
     </main>
