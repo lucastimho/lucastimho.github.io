@@ -48,15 +48,17 @@ export function IsolatorVCard() {
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#070b1a]/80 font-mono backdrop-blur-xl shadow-[0_0_0_1px_rgba(0,127,255,0.05),0_30px_60px_-20px_rgba(0,0,0,0.7)] transition-shadow duration-500 hover:shadow-[0_0_0_1px_rgba(0,127,255,0.25),0_0_60px_-10px_rgba(0,127,255,0.4),0_30px_60px_-20px_rgba(0,0,0,0.7)]"
     >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.04]"
-        style={{
-          backgroundImage:
-            'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)',
-          backgroundSize: '32px 32px',
-        }}
-      />
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        <motion.div
+          animate={reduce ? undefined : { y: [0, 3] }}
+          transition={{ duration: 0.6, repeat: Infinity, ease: 'linear' }}
+          className="h-[200%] w-full opacity-[0.05]"
+          style={{
+            backgroundImage:
+              'repeating-linear-gradient(180deg, transparent 0px, transparent 2px, rgba(122,181,255,0.85) 2px, rgba(122,181,255,0.85) 3px)',
+          }}
+        />
+      </div>
 
       <header className="relative flex items-center gap-3 border-b border-white/5 bg-white/[0.02] px-5 py-3">
         <div className="flex gap-1.5">

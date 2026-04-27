@@ -54,6 +54,16 @@ export function ApexPayCard() {
 
   const receipt = RECEIPTS[receiptIdx]
 
+  const [tokenStage, setTokenStage] = useState(-1)
+
+  useEffect(() => {
+    if (reduce) return
+    const id = window.setInterval(() => {
+      setTokenStage((prev) => (prev >= STAGES.length - 1 ? -1 : prev + 1))
+    }, 700)
+    return () => window.clearInterval(id)
+  }, [reduce])
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 24 }}
@@ -131,9 +141,28 @@ export function ApexPayCard() {
                   transition={{ delay: 0.3 + i * 0.08, duration: 0.4 }}
                   className="group/stage relative flex-1"
                 >
-                  <div className="rounded-md border border-white/10 bg-white/[0.04] px-2 py-2.5 text-center text-[10.5px] font-medium tracking-tight text-white/75 transition-all duration-300 group-hover/stage:border-[#007FFF]/40 group-hover/stage:bg-[#007FFF]/[0.08] group-hover/stage:text-white">
+                  <div
+                    className={`rounded-md border px-2 py-2.5 text-center text-[10.5px] font-medium tracking-tight transition-all duration-300 ${
+                      tokenStage === i
+                        ? 'border-[#007FFF]/50 bg-[#007FFF]/[0.10] text-white'
+                        : 'border-white/10 bg-white/[0.04] text-white/75 group-hover/stage:border-[#007FFF]/40 group-hover/stage:bg-[#007FFF]/[0.08] group-hover/stage:text-white'
+                    }`}
+                  >
                     {stage}
                   </div>
+                  <AnimatePresence>
+                    {tokenStage === i && (
+                      <motion.span
+                        layoutId="apex-decision-token"
+                        aria-hidden
+                        initial={{ opacity: 0, scale: 0.5 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.5 }}
+                        transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+                        className="absolute -top-1 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[#007FFF] shadow-[0_0_6px_rgba(0,127,255,0.95)]"
+                      />
+                    )}
+                  </AnimatePresence>
                   {i < STAGES.length - 1 && (
                     <motion.div
                       aria-hidden

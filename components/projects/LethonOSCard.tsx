@@ -2,6 +2,13 @@
 
 import { motion, useReducedMotion } from 'framer-motion'
 
+const ROW_HEIGHT = 44
+const DOT_TOP_BY_TIER = [
+  ROW_HEIGHT * 1 + ROW_HEIGHT / 2 - 4,
+  ROW_HEIGHT * 2 + ROW_HEIGHT / 2 - 4,
+  ROW_HEIGHT * 3 + ROW_HEIGHT / 2 - 4,
+] as const
+
 const STORY_BEATS: { label: string; text: string }[] = [
   {
     label: 'problem',
@@ -118,11 +125,12 @@ export function LethonOSCard() {
           </a>
         </div>
 
-        <div className="mt-7 overflow-hidden rounded-xl border border-white/10 bg-black/30">
+        <div className="relative mt-7 overflow-hidden rounded-xl border border-white/10 bg-black/30">
           {TIERS.map((tier, i) => (
             <div
               key={tier.name}
-              className={`relative grid grid-cols-[88px_1fr_auto] items-center gap-3 px-4 py-3 ${
+              style={{ height: `${ROW_HEIGHT}px` }}
+              className={`relative grid grid-cols-[88px_1fr_auto] items-center gap-3 px-4 ${
                 i > 0 ? 'border-t border-white/[0.06]' : ''
               } ${tier.immutable ? 'bg-[#007FFF]/[0.04]' : ''}`}
             >
@@ -153,22 +161,37 @@ export function LethonOSCard() {
                   <span className="w-12 text-right text-white/35">{tier.target}</span>
                 </div>
               )}
-
-              {!tier.immutable && i < TIERS.length - 1 && (
-                <motion.span
-                  aria-hidden
-                  animate={reduce ? undefined : { opacity: [0, 0.95, 0] }}
-                  transition={{
-                    duration: 1.4,
-                    repeat: Infinity,
-                    delay: 0.6 + (i - 1) * 0.7,
-                    ease: 'easeInOut',
-                  }}
-                  className="absolute right-0 top-1/2 h-2 w-[3px] -translate-y-1/2 rounded-l-sm bg-[#007FFF] shadow-[0_0_5px_rgba(0,127,255,0.7)]"
-                />
-              )}
             </div>
           ))}
+
+          <motion.span
+            aria-hidden
+            initial={{ opacity: 0, y: DOT_TOP_BY_TIER[0] }}
+            animate={
+              reduce
+                ? undefined
+                : {
+                    y: [
+                      DOT_TOP_BY_TIER[0],
+                      DOT_TOP_BY_TIER[0],
+                      DOT_TOP_BY_TIER[0],
+                      DOT_TOP_BY_TIER[1],
+                      DOT_TOP_BY_TIER[1],
+                      DOT_TOP_BY_TIER[2],
+                      DOT_TOP_BY_TIER[2],
+                      DOT_TOP_BY_TIER[2],
+                    ],
+                    opacity: [0, 1, 1, 1, 1, 1, 1, 0],
+                  }
+            }
+            transition={{
+              duration: 5.6,
+              times: [0, 0.06, 0.26, 0.34, 0.54, 0.62, 0.84, 1],
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+            className="pointer-events-none absolute right-3 left-auto top-0 h-2 w-2 rounded-full bg-[#007FFF] shadow-[0_0_8px_rgba(0,127,255,0.85)]"
+          />
         </div>
 
         <div className="mt-3 text-center">

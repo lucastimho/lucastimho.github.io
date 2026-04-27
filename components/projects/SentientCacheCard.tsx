@@ -1,6 +1,13 @@
 'use client'
 
-import { motion, useReducedMotion } from 'framer-motion'
+import { useRef } from 'react'
+import {
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useTransform,
+  type MotionValue,
+} from 'framer-motion'
 
 const STORY_BEATS: { label: string; text: string }[] = [
   {
@@ -46,11 +53,11 @@ function galaxyPoints(count: number, seed: number): Point[] {
 const BG_DOTS = galaxyPoints(72, 11)
 const GALAXY_DOTS = galaxyPoints(120, 17)
 const HIGHLIGHTED = [
-  { x: 28, y: 38 },
-  { x: 52, y: 60 },
-  { x: 71, y: 35 },
-  { x: 44, y: 78 },
-  { x: 18, y: 64 },
+  { x: 28, y: 38, depth: 0.7 },
+  { x: 52, y: 60, depth: 1.0 },
+  { x: 71, y: 35, depth: 0.5 },
+  { x: 44, y: 78, depth: 0.85 },
+  { x: 18, y: 64, depth: 0.6 },
 ]
 const EDGES: [number, number][] = [
   [0, 1],
@@ -60,8 +67,62 @@ const EDGES: [number, number][] = [
   [0, 4],
 ]
 
+function HighlightedStar({
+  point,
+  index,
+  mouseX,
+  mouseY,
+  reduce,
+}: {
+  point: { x: number; y: number; depth: number }
+  index: number
+  mouseX: MotionValue<number>
+  mouseY: MotionValue<number>
+  reduce: boolean | null
+}) {
+  const tx = useTransform(mouseX, (m) => m * point.depth * 14)
+  const ty = useTransform(mouseY, (m) => m * point.depth * 14)
+
+  return (
+    <motion.span
+      aria-hidden
+      style={{
+        left: `${point.x}%`,
+        top: `${point.y}%`,
+        x: tx,
+        y: ty,
+      }}
+      animate={
+        reduce ? undefined : { opacity: [0.55, 1, 0.55], scale: [1, 1.35, 1] }
+      }
+      transition={{
+        duration: 2.4 + index * 0.3,
+        repeat: Infinity,
+        delay: index * 0.5,
+        ease: 'easeInOut',
+      }}
+      className="absolute h-[5px] w-[5px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#007FFF] shadow-[0_0_10px_rgba(0,127,255,0.85)]"
+    />
+  )
+}
+
 export function SentientCacheCard() {
   const reduce = useReducedMotion()
+  const galaxyRef = useRef<HTMLDivElement>(null)
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!galaxyRef.current || reduce) return
+    const rect = galaxyRef.current.getBoundingClientRect()
+    mouseX.set((e.clientX - rect.left) / rect.width - 0.5)
+    mouseY.set((e.clientY - rect.top) / rect.height - 0.5)
+  }
+
+  const handleMouseLeave = () => {
+    mouseX.set(0)
+    mouseY.set(0)
+  }
 
   return (
     <motion.article
@@ -134,7 +195,12 @@ export function SentientCacheCard() {
           </a>
         </div>
 
-        <div className="relative mt-7 h-36 overflow-hidden rounded-xl border border-white/10 bg-black/40">
+        <div
+          ref={galaxyRef}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+          className="relative mt-7 h-36 overflow-hidden rounded-xl border border-white/10 bg-black/40"
+        >
           <div className="absolute inset-0">
             {GALAXY_DOTS.map((d, i) => (
               <span
@@ -176,26 +242,13 @@ export function SentientCacheCard() {
 
           <div className="absolute inset-0">
             {HIGHLIGHTED.map((p, i) => (
-              <motion.span
+              <HighlightedStar
                 key={i}
-                aria-hidden
-                animate={
-                  reduce
-                    ? undefined
-                    : { opacity: [0.55, 1, 0.55], scale: [1, 1.35, 1] }
-                }
-                transition={{
-                  duration: 2.4 + i * 0.3,
-                  repeat: Infinity,
-                  delay: i * 0.5,
-                  ease: 'easeInOut',
-                }}
-                className="absolute h-[5px] w-[5px] rounded-full bg-[#007FFF] shadow-[0_0_10px_rgba(0,127,255,0.85)]"
-                style={{
-                  left: `${p.x}%`,
-                  top: `${p.y}%`,
-                  transform: 'translate(-50%, -50%)',
-                }}
+                point={p}
+                index={i}
+                mouseX={mouseX}
+                mouseY={mouseY}
+                reduce={reduce}
               />
             ))}
           </div>
