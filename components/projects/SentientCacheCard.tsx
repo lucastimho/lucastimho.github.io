@@ -228,7 +228,49 @@ export function SentientCacheCard() {
           ))}
         </div>
 
-        <div className="mt-6 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[11px] text-white/55">
+        <div className="mt-5 rounded-xl border border-white/10 bg-black/25 px-4 py-3">
+          <div className="mb-2.5 flex items-center justify-between text-[10px] uppercase tracking-[0.2em]">
+            <span className="text-white/40">partition trade-off</span>
+            <span className="font-mono text-[#7ab5ff]">AP-consistent</span>
+          </div>
+          <div className="relative flex items-center justify-between gap-3">
+            <div className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#007FFF] shadow-[0_0_5px_rgba(0,127,255,0.7)]" />
+              <span className="font-mono text-[11px] text-white/70">edge</span>
+              <span className="font-mono text-[10px] text-white/35">·sqlite</span>
+            </div>
+            <div className="relative h-px flex-1 overflow-hidden bg-white/10">
+              <motion.div
+                aria-hidden
+                animate={reduce ? undefined : { x: ['-100%', '300%'] }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: [0.65, 0, 0.35, 1],
+                  repeatDelay: 0.6,
+                }}
+                className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-[#007FFF] to-transparent"
+              />
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="font-mono text-[10px] text-white/35">pgvector·</span>
+              <span className="font-mono text-[11px] text-white/70">central</span>
+              <motion.span
+                aria-hidden
+                animate={
+                  reduce ? undefined : { opacity: [0.35, 0.85, 0.35], scale: [1, 1.2, 1] }
+                }
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 1.2 }}
+                className="h-1.5 w-1.5 rounded-full bg-white/45"
+              />
+            </div>
+          </div>
+          <div className="mt-2 font-mono text-[9.5px] text-white/30">
+            write-behind · BullMQ · eventual
+          </div>
+        </div>
+
+        <div className="mt-5 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[11px] text-white/55">
           <span className="text-[10px] uppercase tracking-[0.2em] text-white/30">stack</span>
           {STACK.map((t, i) => (
             <span key={t} className="flex items-center gap-2.5">

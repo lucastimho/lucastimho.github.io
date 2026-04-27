@@ -200,7 +200,63 @@ export function LethonOSCard() {
           ))}
         </div>
 
-        <div className="mt-6 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[11px] text-white/55">
+        <div className="mt-5 rounded-xl border border-white/10 bg-black/25 px-4 py-3.5">
+          <div className="mb-2.5 flex items-center justify-between text-[10px] uppercase tracking-[0.2em]">
+            <span className="text-white/40">audit chain</span>
+            <span className="font-mono text-[#7ab5ff]">verified</span>
+          </div>
+          <div className="flex items-center gap-2 font-mono text-[11px] tabular-nums">
+            {['a3f7', '9e2c', '41b8', '6f0a', 'c4d3'].map((hash, i, arr) => (
+              <div key={hash} className="flex items-center gap-2">
+                <motion.span
+                  animate={
+                    reduce
+                      ? undefined
+                      : {
+                          color: [
+                            'rgba(255,255,255,0.55)',
+                            'rgba(122,181,255,0.95)',
+                            'rgba(255,255,255,0.55)',
+                          ],
+                        }
+                  }
+                  transition={{
+                    duration: 2.4,
+                    repeat: Infinity,
+                    delay: i * 0.4,
+                    ease: 'easeInOut',
+                  }}
+                  className="text-white/55"
+                >
+                  {hash}
+                </motion.span>
+                {i < arr.length - 1 && (
+                  <svg
+                    aria-hidden
+                    width="9"
+                    height="9"
+                    viewBox="0 0 9 9"
+                    fill="none"
+                    className="text-white/20"
+                  >
+                    <path
+                      d="M1.5 4.5 H7.5 M5.5 2.5 L7.5 4.5 L5.5 6.5"
+                      stroke="currentColor"
+                      strokeWidth="1"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="mt-2 font-mono text-[9.5px] text-white/30">
+            blake2b root · 7e2f4a8c·5d91·c4a9
+          </div>
+        </div>
+
+        <div className="mt-5 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[11px] text-white/55">
           <span className="text-[10px] uppercase tracking-[0.2em] text-white/30">stack</span>
           {STACK.map((t, i) => (
             <span key={t} className="flex items-center gap-2.5">

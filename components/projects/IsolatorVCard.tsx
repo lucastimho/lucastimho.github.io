@@ -165,7 +165,24 @@ export function IsolatorVCard() {
       </div>
 
       <footer className="relative flex items-center justify-between border-t border-white/5 bg-white/[0.02] px-5 py-3 text-[11px]">
-        <span className="text-white/40">5,130 LOC · 5-layer defense</span>
+        <div className="flex items-center gap-2.5 text-white/45">
+          <div aria-hidden className="flex items-end gap-[2.5px]">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <motion.span
+                key={i}
+                animate={reduce ? undefined : { opacity: [0.35, 1, 0.35] }}
+                transition={{
+                  duration: 2.4,
+                  repeat: Infinity,
+                  delay: i * 0.18,
+                  ease: 'easeInOut',
+                }}
+                className="block h-3 w-[3px] rounded-sm bg-[#007FFF]"
+              />
+            ))}
+          </div>
+          <span>5-layer defense · 5,130 LOC</span>
+        </div>
         <a
           href="https://github.com/lucastimho/isolator-v-wasm-sandbox"
           target="_blank"

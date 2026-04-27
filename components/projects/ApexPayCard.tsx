@@ -1,6 +1,7 @@
 'use client'
 
-import { motion, useReducedMotion } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 
 const STAGES = ['canonicalize', 'classify', 'evaluate', 'issue', 'sign']
 
@@ -11,6 +12,13 @@ const METRICS = [
 ]
 
 const STACK = ['FastAPI', 'PostgreSQL', 'OPA', 'Redis', 'Ed25519', 'React 19', 'SSE']
+
+const RECEIPTS: { hash: string; latency: number }[] = [
+  { hash: 'e7f3·8a91', latency: 12 },
+  { hash: '9c2a·5e1f', latency: 18 },
+  { hash: '3b8f·4d7c', latency: 9 },
+  { hash: '41a6·7b22', latency: 14 },
+]
 
 const STORY_BEATS: { label: string; text: string }[] = [
   {
@@ -33,6 +41,18 @@ const STORY_BEATS: { label: string; text: string }[] = [
 
 export function ApexPayCard() {
   const reduce = useReducedMotion()
+  const [receiptIdx, setReceiptIdx] = useState(0)
+
+  useEffect(() => {
+    if (reduce) return
+    const id = window.setInterval(
+      () => setReceiptIdx((i) => (i + 1) % RECEIPTS.length),
+      2800,
+    )
+    return () => window.clearInterval(id)
+  }, [reduce])
+
+  const receipt = RECEIPTS[receiptIdx]
 
   return (
     <motion.article
@@ -147,7 +167,44 @@ export function ApexPayCard() {
             ))}
           </div>
 
-          <div className="mt-6 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[11px] text-white/55">
+          <div className="mt-5 overflow-hidden rounded-xl border border-white/10 bg-black/25 px-3.5 py-3">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-white/40">
+                ed25519 ledger · live
+              </span>
+              <span className="flex items-center gap-1.5 font-mono text-[10px] text-[#7ab5ff]">
+                <span className="relative flex h-1.5 w-1.5">
+                  {!reduce && (
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#007FFF] opacity-75" />
+                  )}
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#007FFF]" />
+                </span>
+                signed
+              </span>
+            </div>
+            <div className="relative h-[18px] overflow-hidden">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={receiptIdx}
+                  initial={reduce ? false : { opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={reduce ? undefined : { opacity: 0, y: -8 }}
+                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  className="absolute inset-0 flex items-center gap-3 font-mono text-[11px]"
+                >
+                  <span className="text-white/40">sig</span>
+                  <span className="tabular-nums text-white/85">{receipt.hash}</span>
+                  <span className="text-white/25">→</span>
+                  <span className="text-[#7ab5ff]">approved</span>
+                  <span className="ml-auto tabular-nums text-white/45">
+                    {receipt.latency}ms
+                  </span>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
+
+          <div className="mt-5 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[11px] text-white/55">
             <span className="text-[10px] uppercase tracking-[0.2em] text-white/30">stack</span>
             {STACK.map((t, i) => (
               <span key={t} className="flex items-center gap-2.5">
