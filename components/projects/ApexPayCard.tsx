@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 
 const STAGES = ['canonicalize', 'classify', 'evaluate', 'issue', 'sign']
@@ -18,6 +18,10 @@ const RECEIPTS: { hash: string; latency: number }[] = [
   { hash: '9c2a·5e1f', latency: 18 },
   { hash: '3b8f·4d7c', latency: 9 },
   { hash: '41a6·7b22', latency: 14 },
+  { hash: 'b29d·6e08', latency: 21 },
+  { hash: '5a17·c3f8', latency: 11 },
+  { hash: 'd84e·0b2a', latency: 16 },
+  { hash: '2f9c·a715', latency: 8 },
 ]
 
 const STORY_BEATS: { label: string; text: string }[] = [
@@ -42,19 +46,8 @@ const STORY_BEATS: { label: string; text: string }[] = [
 export function ApexPayCard() {
   const reduce = useReducedMotion()
   const [receiptIdx, setReceiptIdx] = useState(0)
-
-  useEffect(() => {
-    if (reduce) return
-    const id = window.setInterval(
-      () => setReceiptIdx((i) => (i + 1) % RECEIPTS.length),
-      2800,
-    )
-    return () => window.clearInterval(id)
-  }, [reduce])
-
-  const receipt = RECEIPTS[receiptIdx]
-
   const [tokenStage, setTokenStage] = useState(-1)
+  const prevStageRef = useRef(-1)
 
   useEffect(() => {
     if (reduce) return
@@ -63,6 +56,19 @@ export function ApexPayCard() {
     }, 700)
     return () => window.clearInterval(id)
   }, [reduce])
+
+  // Pipeline completion → emit receipt
+  useEffect(() => {
+    if (
+      prevStageRef.current === STAGES.length - 1 &&
+      tokenStage === -1
+    ) {
+      setReceiptIdx((prev) => (prev + 1) % RECEIPTS.length)
+    }
+    prevStageRef.current = tokenStage
+  }, [tokenStage])
+
+  const receipt = RECEIPTS[receiptIdx]
 
   return (
     <motion.article

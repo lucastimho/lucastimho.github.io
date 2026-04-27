@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   motion,
   useMotionValue,
@@ -8,6 +8,13 @@ import {
   useTransform,
   type MotionValue,
 } from 'framer-motion'
+
+const INTENTS = [
+  'summarize q2 launch retrospective',
+  'recall last week reflections',
+  'find related: "tool-use safety"',
+  'pin: shipping decision · oct 12',
+]
 
 const STORY_BEATS: { label: string; text: string }[] = [
   {
@@ -123,6 +130,35 @@ export function SentientCacheCard() {
     mouseX.set(0)
     mouseY.set(0)
   }
+
+  const [intentIdx, setIntentIdx] = useState(0)
+  const [charCount, setCharCount] = useState(0)
+
+  useEffect(() => {
+    if (reduce) {
+      setCharCount(INTENTS[intentIdx].length)
+      return
+    }
+
+    const intent = INTENTS[intentIdx]
+    let i = 0
+    let timeout: ReturnType<typeof setTimeout>
+
+    const tick = () => {
+      if (i <= intent.length) {
+        setCharCount(i)
+        i += 1
+        timeout = setTimeout(tick, 38)
+      } else {
+        timeout = setTimeout(() => {
+          setIntentIdx((prev) => (prev + 1) % INTENTS.length)
+        }, 2400)
+      }
+    }
+
+    tick()
+    return () => clearTimeout(timeout)
+  }, [intentIdx, reduce])
 
   return (
     <motion.article
@@ -253,8 +289,29 @@ export function SentientCacheCard() {
             ))}
           </div>
 
-          <div className="pointer-events-none absolute left-3 top-2.5 font-mono text-[9.5px] uppercase tracking-[0.22em] text-white/40">
-            galaxy · 384-d
+          <div className="pointer-events-none absolute left-3 right-3 top-2.5 flex items-center gap-1.5 font-mono text-[10px]">
+            <span className="text-white/35 uppercase tracking-[0.18em]">intent</span>
+            <span className="text-white/20">→</span>
+            <span className="flex min-w-0 items-center text-white/80">
+              <span className="truncate">
+                &quot;{INTENTS[intentIdx].slice(0, charCount)}&quot;
+              </span>
+              <motion.span
+                aria-hidden
+                animate={
+                  reduce
+                    ? undefined
+                    : { opacity: [1, 1, 0, 0] }
+                }
+                transition={{
+                  duration: 1,
+                  repeat: Infinity,
+                  times: [0, 0.5, 0.5, 1],
+                  ease: 'linear',
+                }}
+                className="ml-[2px] inline-block h-[10px] w-[5px] -translate-y-[1px] bg-[#7ab5ff]"
+              />
+            </span>
           </div>
           <div className="pointer-events-none absolute bottom-2.5 right-3 font-mono text-[9.5px] tabular-nums text-white/40">
             top-k = 5 · cosine

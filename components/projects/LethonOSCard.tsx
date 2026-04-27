@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 
 const ROW_HEIGHT = 44
@@ -8,6 +9,12 @@ const DOT_TOP_BY_TIER = [
   ROW_HEIGHT * 2 + ROW_HEIGHT / 2 - 4,
   ROW_HEIGHT * 3 + ROW_HEIGHT / 2 - 4,
 ] as const
+
+const UTILITY_RINGS: Record<string, number[]> = {
+  L1: [0.87, 0.86, 0.88, 0.89, 0.87, 0.85, 0.86, 0.88],
+  L2: [0.42, 0.43, 0.41, 0.42, 0.4, 0.43, 0.41, 0.42],
+  L3: [0.18, 0.17, 0.19, 0.18, 0.2, 0.18, 0.17, 0.19],
+}
 
 const STORY_BEATS: { label: string; text: string }[] = [
   {
@@ -60,6 +67,20 @@ const STACK = ['Python', 'FastAPI', 'Redis', 'Qdrant', 'SQLite', 'D3', 'Ed25519'
 
 export function LethonOSCard() {
   const reduce = useReducedMotion()
+  const [tickIdx, setTickIdx] = useState(0)
+
+  useEffect(() => {
+    if (reduce) return
+    const id = window.setInterval(() => {
+      setTickIdx((prev) => (prev + 1) % 1000)
+    }, 1800)
+    return () => window.clearInterval(id)
+  }, [reduce])
+
+  const utilityFor = (name: string): number | undefined => {
+    const ring = UTILITY_RINGS[name]
+    return ring ? ring[tickIdx % ring.length] : undefined
+  }
 
   return (
     <motion.article
@@ -157,7 +178,9 @@ export function LethonOSCard() {
                 </span>
               ) : (
                 <div className="flex items-center gap-3 font-mono text-[11px] tabular-nums">
-                  <span className="text-white/75">U={tier.utility?.toFixed(2)}</span>
+                  <span className="text-white/75">
+                    U={(utilityFor(tier.name) ?? tier.utility ?? 0).toFixed(2)}
+                  </span>
                   <span className="w-12 text-right text-white/35">{tier.target}</span>
                 </div>
               )}

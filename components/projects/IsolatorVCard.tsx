@@ -168,19 +168,35 @@ export function IsolatorVCard() {
 
       <footer className="relative flex items-center justify-between border-t border-white/5 bg-white/[0.02] px-5 py-3 text-[11px]">
         <div className="flex items-center gap-2.5 text-white/45">
-          <div aria-hidden className="flex items-end gap-[2.5px]">
-            {[0, 1, 2, 3, 4].map((i) => (
-              <motion.span
-                key={i}
-                animate={reduce ? undefined : { opacity: [0.35, 1, 0.35] }}
-                transition={{
-                  duration: 2.4,
-                  repeat: Infinity,
-                  delay: i * 0.18,
-                  ease: 'easeInOut',
-                }}
-                className="block h-3 w-[3px] rounded-sm bg-[#007FFF]"
-              />
+          <div className="relative flex items-end gap-[3px]">
+            {[
+              { label: 'seccomp', detail: '67/18' },
+              { label: 'OCAP', detail: '19 caps' },
+              { label: 'VFS', detail: '256 fd' },
+              { label: 'memory', detail: '50MB' },
+              { label: 'regex', detail: '16 pat' },
+            ].map((layer, i) => (
+              <span key={layer.label} className="group/bar relative">
+                <motion.span
+                  aria-hidden
+                  animate={reduce ? undefined : { opacity: [0.35, 1, 0.35] }}
+                  transition={{
+                    duration: 2.4,
+                    repeat: Infinity,
+                    delay: i * 0.18,
+                    ease: 'easeInOut',
+                  }}
+                  className="block h-3 w-[3px] rounded-sm bg-[#007FFF] transition-transform duration-150 group-hover/bar:scale-y-125"
+                />
+                <span
+                  role="tooltip"
+                  className="pointer-events-none absolute -top-[34px] left-1/2 z-10 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-sm border border-white/10 bg-[#050814]/95 px-1.5 py-1 font-mono text-[9px] uppercase tracking-[0.16em] opacity-0 shadow-[0_8px_20px_-8px_rgba(0,0,0,0.8)] backdrop-blur-sm transition-opacity duration-200 group-hover/bar:opacity-100"
+                >
+                  <span className="text-[#7ab5ff]">{layer.label}</span>
+                  <span className="text-white/35">·</span>
+                  <span className="text-white/65">{layer.detail}</span>
+                </span>
+              </span>
             ))}
           </div>
           <span>5-layer defense · 5,130 LOC</span>
