@@ -2,6 +2,8 @@ import { Starfield } from '@/components/Starfield'
 import { Experience } from '@/components/Experience'
 import { IsolatorVCard } from '@/components/projects/IsolatorVCard'
 import { ApexPayCard } from '@/components/projects/ApexPayCard'
+import { SentientCacheCard } from '@/components/projects/SentientCacheCard'
+import { LethonOSCard } from '@/components/projects/LethonOSCard'
 import { ProjectsBackdrop } from '@/components/ProjectsBackdrop'
 import { SecondaryProjects } from '@/components/projects/SecondaryProjects'
 
@@ -90,7 +92,7 @@ export default function Home() {
                 selected work
               </div>
               <h2 className="mt-2 text-[28px] font-semibold tracking-tight text-white">
-                Two systems worth a closer look
+                Four systems worth a closer look
               </h2>
             </div>
             <div className="hidden text-right text-[12px] text-white/40 sm:block">
@@ -103,6 +105,8 @@ export default function Home() {
             <div className="grid gap-8 lg:grid-cols-2">
               <IsolatorVCard />
               <ApexPayCard />
+              <SentientCacheCard />
+              <LethonOSCard />
             </div>
           </div>
         </section>
