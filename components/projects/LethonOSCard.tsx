@@ -200,7 +200,7 @@ export function LethonOSCard() {
                   }
                 : { duration: 0.3 }
             }
-            className="pointer-events-none absolute left-1.5 top-0 h-1.5 w-1.5 rounded-full bg-[#007FFF] shadow-[0_0_5px_rgba(0,127,255,0.7)]"
+            className="pointer-events-none absolute left-4 top-0 h-1.5 w-1.5 rounded-full bg-[#007FFF] shadow-[0_0_8px_rgba(0,127,255,0.9)]"
           />
         </div>
 
