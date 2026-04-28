@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { useCardMotion } from './useCardMotion'
 
 const VALUE_PROP =
   'Zero-trust gateway routing AI tool-calls through a 5-stage fail-closed pipeline before any scoped credential is issued.'
@@ -29,8 +30,7 @@ const RECEIPTS: { hash: string; latency: number }[] = [
 
 export function ApexPayCard() {
   const reduce = useReducedMotion()
-  const [hovered, setHovered] = useState(false)
-  const live = hovered && !reduce
+  const { ref, live, onMouseEnter, onMouseLeave } = useCardMotion(reduce)
 
   const [receiptIdx, setReceiptIdx] = useState(0)
   const [tokenStage, setTokenStage] = useState(-1)
@@ -58,12 +58,13 @@ export function ApexPayCard() {
 
   return (
     <motion.article
+      ref={ref as React.RefObject<HTMLElement>}
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-80px' }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       className="group relative font-sans"
     >
       <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-navy-900/60 backdrop-blur-2xl shadow-[0_0_0_1px_rgba(0,127,255,0.05),0_30px_60px_-20px_rgba(0,0,0,0.7)] transition-shadow duration-500 group-hover:shadow-[0_0_0_1px_rgba(0,127,255,0.25),0_0_60px_-10px_rgba(0,127,255,0.4),0_30px_60px_-20px_rgba(0,0,0,0.7)]">
@@ -75,7 +76,7 @@ export function ApexPayCard() {
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.25em] text-[#7ab5ff]">
                 <span aria-hidden className="relative flex h-1.5 w-1.5">
-                  {!reduce && (
+                  {live && (
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#007FFF] opacity-75" />
                   )}
                   <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#007FFF]" />
@@ -85,6 +86,9 @@ export function ApexPayCard() {
               <h3 className="mt-3 text-[28px] font-semibold leading-none tracking-tight text-white">
                 APEX<span aria-hidden className="mx-0.5 text-[#7ab5ff]">·</span>Pay
               </h3>
+              <div className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
+                solo · 2025 · shipped
+              </div>
               <p className="mt-3 text-balance text-[13px] leading-relaxed text-white/60">
                 {VALUE_PROP}
               </p>

@@ -8,6 +8,7 @@ import {
   useTransform,
   type MotionValue,
 } from 'framer-motion'
+import { useCardMotion } from './useCardMotion'
 
 const VALUE_PROP =
   'Edge-native semantic memory for AI agents. Sub-millisecond local retrieval with write-behind sync to a central pgvector store.'
@@ -101,8 +102,7 @@ function HighlightedStar({
 
 export function SentientCacheCard() {
   const reduce = useReducedMotion()
-  const [hovered, setHovered] = useState(false)
-  const live = hovered && !reduce
+  const { ref: cardRef, live, onMouseEnter, onMouseLeave: cardOnLeave } = useCardMotion(reduce)
 
   const galaxyRef = useRef<HTMLDivElement>(null)
   const mouseX = useMotionValue(0)
@@ -146,13 +146,14 @@ export function SentientCacheCard() {
 
   return (
     <motion.article
+      ref={cardRef as React.RefObject<HTMLElement>}
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-80px' }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      onMouseEnter={() => setHovered(true)}
+      onMouseEnter={onMouseEnter}
       onMouseLeave={() => {
-        setHovered(false)
+        cardOnLeave()
         mouseX.set(0)
         mouseY.set(0)
       }}
@@ -190,6 +191,9 @@ export function SentientCacheCard() {
             <h3 className="mt-3 text-[26px] font-semibold leading-none tracking-tight text-white">
               Sentient-Cache
             </h3>
+            <div className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
+              solo · 2025 · shipped
+            </div>
             <p className="mt-3 text-balance text-[13px] leading-relaxed text-white/60">
               {VALUE_PROP}
             </p>

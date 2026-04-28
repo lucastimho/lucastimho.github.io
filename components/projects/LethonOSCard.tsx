@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
+import { useCardMotion } from './useCardMotion'
 
 const VALUE_PROP =
-  'Self-governing memory for LLM agents. Utility-scored pruning across three tiers, with the safety constitution structurally exempt from decay.'
+  'Self-governing memory for LLM agents. Three tiers prune by utility score; the safety constitution lives in a separate, immutable tier.'
 
 const ROW_HEIGHT = 44
 const DOT_TOP_BY_TIER = [
@@ -42,9 +43,9 @@ const TIERS: Tier[] = [
 ]
 
 const METRICS = [
-  { value: '4', unit: 'tiers', label: 'L0_CORE through L3' },
+  { value: '4', unit: 'tiers', label: 'memory hierarchy' },
   { value: '120', unit: 'tests', label: 'fully offline' },
-  { value: '<10', unit: 'ms', label: 'L0/L1 hot tier' },
+  { value: '<10', unit: 'ms', label: 'hot retrieval' },
 ]
 
 const STACK = ['Python', 'FastAPI', 'Redis', 'Qdrant', 'SQLite', 'D3', 'Ed25519']
@@ -53,8 +54,7 @@ const AUDIT_HASHES = ['a3f7', '9e2c', '41b8', '6f0a', 'c4d3']
 
 export function LethonOSCard() {
   const reduce = useReducedMotion()
-  const [hovered, setHovered] = useState(false)
-  const live = hovered && !reduce
+  const { ref, live, onMouseEnter, onMouseLeave } = useCardMotion(reduce)
   const [tickIdx, setTickIdx] = useState(0)
 
   useEffect(() => {
@@ -72,12 +72,13 @@ export function LethonOSCard() {
 
   return (
     <motion.article
+      ref={ref as React.RefObject<HTMLElement>}
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-80px' }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       className="group relative overflow-hidden rounded-2xl border border-white/10 bg-navy-900/70 font-sans backdrop-blur-2xl shadow-[0_0_0_1px_rgba(0,127,255,0.05),0_30px_60px_-20px_rgba(0,0,0,0.7)] transition-shadow duration-500 hover:shadow-[0_0_0_1px_rgba(0,127,255,0.25),0_0_60px_-10px_rgba(0,127,255,0.4),0_30px_60px_-20px_rgba(0,0,0,0.7)]"
     >
       <div
@@ -105,6 +106,9 @@ export function LethonOSCard() {
             <h3 className="mt-3 text-[26px] font-semibold leading-none tracking-tight text-white">
               Lethon-OS
             </h3>
+            <div className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
+              solo · 2025 · active
+            </div>
             <p className="mt-3 text-balance text-[13px] leading-relaxed text-white/60">
               {VALUE_PROP}
             </p>
