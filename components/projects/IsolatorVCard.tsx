@@ -171,57 +171,31 @@ export function IsolatorVCard() {
         </div>
       </div>
 
-      <footer className="relative flex items-center justify-between border-t border-white/5 bg-white/[0.02] px-5 py-3 text-[11px]">
-        <div className="flex items-center gap-2.5 text-white/45">
-          <div aria-hidden className="relative flex items-end gap-[3px]">
-            {DEFENSE_LAYERS.map((layer, i) => (
-              <span key={layer.label} className="group/bar relative">
-                <motion.span
-                  animate={live ? { opacity: [0.35, 1, 0.35] } : { opacity: 0.6 }}
-                  transition={
-                    live
-                      ? { duration: 2.4, repeat: Infinity, delay: i * 0.18, ease: 'easeInOut' }
-                      : { duration: 0.3 }
-                  }
-                  className="block h-3 w-[3px] rounded-sm bg-[#007FFF] transition-transform duration-150 group-hover/bar:scale-y-125"
-                />
-                <span
-                  role="tooltip"
-                  className="pointer-events-none absolute -top-[34px] left-1/2 z-10 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-sm border border-white/10 bg-navy-950/95 px-1.5 py-1 font-mono text-[9px] uppercase tracking-[0.16em] opacity-0 shadow-[0_8px_20px_-8px_rgba(0,0,0,0.8)] backdrop-blur-sm transition-opacity duration-200 group-hover/bar:opacity-100"
-                >
-                  <span className="text-[#7ab5ff]">{layer.label}</span>
-                  <span className="text-white/35">·</span>
-                  <span className="text-white/65">{layer.detail}</span>
-                </span>
+      <footer className="relative flex items-center gap-2.5 border-t border-white/5 bg-white/[0.02] px-5 py-3 text-[11px] text-white/45">
+        <div aria-hidden className="relative flex items-end gap-[3px]">
+          {DEFENSE_LAYERS.map((layer, i) => (
+            <span key={layer.label} className="group/bar relative">
+              <motion.span
+                animate={live ? { opacity: [0.35, 1, 0.35] } : { opacity: 0.6 }}
+                transition={
+                  live
+                    ? { duration: 2.4, repeat: Infinity, delay: i * 0.18, ease: 'easeInOut' }
+                    : { duration: 0.3 }
+                }
+                className="block h-3 w-[3px] rounded-sm bg-[#007FFF] transition-transform duration-150 group-hover/bar:scale-y-125"
+              />
+              <span
+                role="tooltip"
+                className="pointer-events-none absolute -top-[34px] left-1/2 z-10 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-sm border border-white/10 bg-navy-950/95 px-1.5 py-1 font-mono text-[9px] uppercase tracking-[0.16em] opacity-0 shadow-[0_8px_20px_-8px_rgba(0,0,0,0.8)] backdrop-blur-sm transition-opacity duration-200 group-hover/bar:opacity-100"
+              >
+                <span className="text-[#7ab5ff]">{layer.label}</span>
+                <span className="text-white/35">·</span>
+                <span className="text-white/65">{layer.detail}</span>
               </span>
-            ))}
-          </div>
-          <span>5-layer defense · 5,130 LOC</span>
+            </span>
+          ))}
         </div>
-        <a
-          href="https://github.com/lucastimho/isolator-v-wasm-sandbox"
-          target="_blank"
-          rel="noreferrer"
-          className="group/link flex items-center gap-1.5 text-[#007FFF] transition-colors hover:text-white"
-        >
-          view source
-          <svg
-            aria-hidden
-            width="10"
-            height="10"
-            viewBox="0 0 10 10"
-            fill="none"
-            className="transition-transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5"
-          >
-            <path
-              d="M2 8 L8 2 M8 2 H4 M8 2 V6"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </a>
+        <span>5-layer defense · 5,130 LOC</span>
       </footer>
     </motion.article>
   )

@@ -31,7 +31,7 @@ interface Tier {
 
 const TIERS: Tier[] = [
   {
-    name: 'L0_CORE',
+    name: 'core',
     store: 'Redis',
     target: '<10ms',
     role: 'safety constitution',

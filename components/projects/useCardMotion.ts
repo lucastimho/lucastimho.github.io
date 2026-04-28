@@ -24,13 +24,18 @@ export function useCardMotion(reduce: boolean | null) {
     let onTimer: ReturnType<typeof setTimeout> | undefined
     let offTimer: ReturnType<typeof setTimeout> | undefined
 
+    // Per-card jitter (0-800ms) decorrelates the trigger across a 2x2 grid
+    // so multiple cards crossing the viewport threshold within the same
+    // scroll second don't activate in lockstep.
+    const enterDelay = 1500 + Math.random() * 800
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           onTimer = setTimeout(() => {
             setTouchActive(true)
             offTimer = setTimeout(() => setTouchActive(false), 6000)
-          }, 1500)
+          }, enterDelay)
         } else {
           if (onTimer) clearTimeout(onTimer)
           if (offTimer) clearTimeout(offTimer)
