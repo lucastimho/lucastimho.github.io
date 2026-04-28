@@ -9,30 +9,14 @@ import {
   type MotionValue,
 } from 'framer-motion'
 
+const VALUE_PROP =
+  'Edge-native semantic memory for AI agents. Sub-millisecond local retrieval with write-behind sync to a central pgvector store.'
+
 const INTENTS = [
   'summarize q2 launch retrospective',
   'recall last week reflections',
   'find related: "tool-use safety"',
   'pin: shipping decision · oct 12',
-]
-
-const STORY_BEATS: { label: string; text: string }[] = [
-  {
-    label: 'problem',
-    text: 'AI agents need persistent memory across sessions and devices. A centralized vector store adds a network round-trip to every retrieval; pure local storage vanishes when the device is wiped.',
-  },
-  {
-    label: 'approach',
-    text: "Take the CAP trade-off explicitly: edge SQLite is the synchronous source of truth on the hot path; central pgvector reaches eventual consistency via BullMQ write-behind. Two-tier eviction (inline TTL+LRU plus semantic Recency × Importance / (1 + Density)) keeps the working set bounded.",
-  },
-  {
-    label: 'built',
-    text: '3,800 lines of Bun/TypeScript across 24 backend modules. Hono ingestor, OPA capability authorization, pluggable embedding encryption, refresh-ahead prefetch on intent change. Plus a Next.js 15 + Three.js operator HUD rendering thousands of 384-d embeddings at 60fps with raycasted hover-pick.',
-  },
-  {
-    label: 'result',
-    text: 'Sub-millisecond synchronous local retrieval. 143 tests across 18 specs, all green. The galaxy HUD picks individual stars under the cursor, cascades through five Esc-deselect levels, and holds 60fps under drag-orbit and search-highlight interaction.',
-  },
 ]
 
 const METRICS = [
@@ -79,13 +63,13 @@ function HighlightedStar({
   index,
   mouseX,
   mouseY,
-  reduce,
+  live,
 }: {
   point: { x: number; y: number; depth: number }
   index: number
   mouseX: MotionValue<number>
   mouseY: MotionValue<number>
-  reduce: boolean | null
+  live: boolean
 }) {
   const tx = useTransform(mouseX, (m) => m * point.depth * 14)
   const ty = useTransform(mouseY, (m) => m * point.depth * 14)
@@ -99,15 +83,17 @@ function HighlightedStar({
         x: tx,
         y: ty,
       }}
-      animate={
-        reduce ? undefined : { opacity: [0.55, 1, 0.55], scale: [1, 1.35, 1] }
+      animate={live ? { opacity: [0.55, 1, 0.55], scale: [1, 1.35, 1] } : { opacity: 0.85, scale: 1 }}
+      transition={
+        live
+          ? {
+              duration: 2.4 + index * 0.3,
+              repeat: Infinity,
+              delay: index * 0.5,
+              ease: 'easeInOut',
+            }
+          : { duration: 0.3 }
       }
-      transition={{
-        duration: 2.4 + index * 0.3,
-        repeat: Infinity,
-        delay: index * 0.5,
-        ease: 'easeInOut',
-      }}
       className="absolute h-[5px] w-[5px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#007FFF] shadow-[0_0_10px_rgba(0,127,255,0.85)]"
     />
   )
@@ -115,27 +101,25 @@ function HighlightedStar({
 
 export function SentientCacheCard() {
   const reduce = useReducedMotion()
+  const [hovered, setHovered] = useState(false)
+  const live = hovered && !reduce
+
   const galaxyRef = useRef<HTMLDivElement>(null)
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!galaxyRef.current || reduce) return
+    if (!galaxyRef.current || !live) return
     const rect = galaxyRef.current.getBoundingClientRect()
     mouseX.set((e.clientX - rect.left) / rect.width - 0.5)
     mouseY.set((e.clientY - rect.top) / rect.height - 0.5)
   }
 
-  const handleMouseLeave = () => {
-    mouseX.set(0)
-    mouseY.set(0)
-  }
-
   const [intentIdx, setIntentIdx] = useState(0)
-  const [charCount, setCharCount] = useState(0)
+  const [charCount, setCharCount] = useState(INTENTS[0].length)
 
   useEffect(() => {
-    if (reduce) {
+    if (!live) {
       setCharCount(INTENTS[intentIdx].length)
       return
     }
@@ -158,7 +142,7 @@ export function SentientCacheCard() {
 
     tick()
     return () => clearTimeout(timeout)
-  }, [intentIdx, reduce])
+  }, [intentIdx, live])
 
   return (
     <motion.article
@@ -166,7 +150,13 @@ export function SentientCacheCard() {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-80px' }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#070b1a]/70 font-sans backdrop-blur-2xl shadow-[0_0_0_1px_rgba(0,127,255,0.05),0_30px_60px_-20px_rgba(0,0,0,0.7)] transition-shadow duration-500 hover:shadow-[0_0_0_1px_rgba(0,127,255,0.25),0_0_60px_-10px_rgba(0,127,255,0.4),0_30px_60px_-20px_rgba(0,0,0,0.7)]"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => {
+        setHovered(false)
+        mouseX.set(0)
+        mouseY.set(0)
+      }}
+      className="group relative overflow-hidden rounded-2xl border border-white/10 bg-navy-900/70 font-sans backdrop-blur-2xl shadow-[0_0_0_1px_rgba(0,127,255,0.05),0_30px_60px_-20px_rgba(0,0,0,0.7)] transition-shadow duration-500 hover:shadow-[0_0_0_1px_rgba(0,127,255,0.25),0_0_60px_-10px_rgba(0,127,255,0.4),0_30px_60px_-20px_rgba(0,0,0,0.7)]"
     >
       <div aria-hidden className="pointer-events-none absolute inset-0 opacity-30">
         {BG_DOTS.map((d, i) => (
@@ -184,38 +174,25 @@ export function SentientCacheCard() {
         ))}
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#007FFF]/50 to-transparent" />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#007FFF]/50 to-transparent" />
 
       <div className="relative px-7 py-7">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.25em] text-[#7ab5ff]">
-              <div className="flex gap-[3px]">
+              <span aria-hidden className="flex gap-[3px]">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#007FFF]" />
                 <span className="h-1.5 w-1.5 rounded-full bg-[#007FFF]/55" />
                 <span className="h-1.5 w-1.5 rounded-full bg-[#007FFF]/25" />
-              </div>
+              </span>
               edge-native memory
             </div>
             <h3 className="mt-3 text-[26px] font-semibold leading-none tracking-tight text-white">
-              Sentient<span className="mx-0.5 text-[#7ab5ff]">·</span>Cache
+              Sentient-Cache
             </h3>
-            <div className="mt-4 space-y-4">
-              {STORY_BEATS.map((beat, i) => (
-                <motion.div
-                  key={beat.label}
-                  initial={reduce ? false : { opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-40px' }}
-                  transition={{ delay: i * 0.09, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  <div className="mb-1 text-[10px] font-medium uppercase tracking-[0.2em] text-[#7ab5ff]/70">
-                    {beat.label}
-                  </div>
-                  <p className="text-[12.5px] leading-relaxed text-white/55">{beat.text}</p>
-                </motion.div>
-              ))}
-            </div>
+            <p className="mt-3 text-balance text-[13px] leading-relaxed text-white/60">
+              {VALUE_PROP}
+            </p>
           </div>
 
           <a
@@ -225,7 +202,7 @@ export function SentientCacheCard() {
             aria-label="View source on GitHub"
             className="shrink-0 rounded-full border border-white/10 bg-white/5 p-2.5 text-white/70 transition hover:border-[#007FFF]/40 hover:bg-[#007FFF]/10 hover:text-white"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <svg aria-hidden width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55 0-.27-.01-1-.02-1.96-3.2.69-3.87-1.54-3.87-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.69 1.25 3.34.95.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.05 11.05 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.62 1.59.23 2.76.11 3.05.74.81 1.18 1.84 1.18 3.1 0 4.42-2.7 5.4-5.27 5.68.41.36.78 1.07.78 2.16 0 1.56-.01 2.81-.01 3.19 0 .31.21.67.8.55C20.21 21.39 23.5 17.07 23.5 12 23.5 5.65 18.35.5 12 .5z" />
             </svg>
           </a>
@@ -234,8 +211,8 @@ export function SentientCacheCard() {
         <div
           ref={galaxyRef}
           onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-          className="relative mt-7 h-36 overflow-hidden rounded-xl border border-white/10 bg-black/40"
+          aria-hidden
+          className="relative mt-6 h-36 overflow-hidden rounded-xl border border-white/10 bg-navy-950/40"
         >
           <div className="absolute inset-0">
             {GALAXY_DOTS.map((d, i) => (
@@ -255,7 +232,6 @@ export function SentientCacheCard() {
           </div>
 
           <svg
-            aria-hidden
             className="pointer-events-none absolute inset-0 h-full w-full"
             preserveAspectRatio="none"
           >
@@ -284,7 +260,7 @@ export function SentientCacheCard() {
                 index={i}
                 mouseX={mouseX}
                 mouseY={mouseY}
-                reduce={reduce}
+                live={live}
               />
             ))}
           </div>
@@ -297,18 +273,17 @@ export function SentientCacheCard() {
                 &quot;{INTENTS[intentIdx].slice(0, charCount)}&quot;
               </span>
               <motion.span
-                aria-hidden
-                animate={
-                  reduce
-                    ? undefined
-                    : { opacity: [1, 1, 0, 0] }
+                animate={live ? { opacity: [1, 1, 0, 0] } : { opacity: 0 }}
+                transition={
+                  live
+                    ? {
+                        duration: 1,
+                        repeat: Infinity,
+                        times: [0, 0.5, 0.5, 1],
+                        ease: 'linear',
+                      }
+                    : { duration: 0.2 }
                 }
-                transition={{
-                  duration: 1,
-                  repeat: Infinity,
-                  times: [0, 0.5, 0.5, 1],
-                  ease: 'linear',
-                }}
                 className="ml-[2px] inline-block h-[10px] w-[5px] -translate-y-[1px] bg-[#7ab5ff]"
               />
             </span>
@@ -338,7 +313,7 @@ export function SentientCacheCard() {
           ))}
         </div>
 
-        <div className="mt-5 rounded-xl border border-white/10 bg-black/25 px-4 py-3">
+        <div aria-hidden className="mt-5 rounded-xl border border-white/10 bg-navy-950/40 px-4 py-3">
           <div className="mb-2.5 flex items-center justify-between text-[10px] uppercase tracking-[0.2em]">
             <span className="text-white/40">partition trade-off</span>
             <span className="font-mono text-[#7ab5ff]">AP-consistent</span>
@@ -351,14 +326,17 @@ export function SentientCacheCard() {
             </div>
             <div className="relative h-px flex-1 overflow-hidden bg-white/10">
               <motion.div
-                aria-hidden
-                animate={reduce ? undefined : { x: ['-100%', '300%'] }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: [0.65, 0, 0.35, 1],
-                  repeatDelay: 0.6,
-                }}
+                animate={live ? { x: ['-100%', '300%'] } : { x: '-100%' }}
+                transition={
+                  live
+                    ? {
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: [0.65, 0, 0.35, 1],
+                        repeatDelay: 0.6,
+                      }
+                    : { duration: 0.3 }
+                }
                 className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-[#007FFF] to-transparent"
               />
             </div>
@@ -366,11 +344,16 @@ export function SentientCacheCard() {
               <span className="font-mono text-[10px] text-white/35">pgvector·</span>
               <span className="font-mono text-[11px] text-white/70">central</span>
               <motion.span
-                aria-hidden
                 animate={
-                  reduce ? undefined : { opacity: [0.35, 0.85, 0.35], scale: [1, 1.2, 1] }
+                  live
+                    ? { opacity: [0.35, 0.85, 0.35], scale: [1, 1.2, 1] }
+                    : { opacity: 0.5, scale: 1 }
                 }
-                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 1.2 }}
+                transition={
+                  live
+                    ? { duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 1.2 }
+                    : { duration: 0.3 }
+                }
                 className="h-1.5 w-1.5 rounded-full bg-white/45"
               />
             </div>
@@ -384,7 +367,7 @@ export function SentientCacheCard() {
           <span className="text-[10px] uppercase tracking-[0.2em] text-white/30">stack</span>
           {STACK.map((t, i) => (
             <span key={t} className="flex items-center gap-2.5">
-              {i > 0 && <span className="h-[3px] w-[3px] rounded-full bg-white/15" />}
+              {i > 0 && <span aria-hidden className="h-[3px] w-[3px] rounded-full bg-white/15" />}
               <span className="transition-colors hover:text-white">{t}</span>
             </span>
           ))}

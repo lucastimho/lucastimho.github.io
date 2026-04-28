@@ -1,11 +1,14 @@
 'use client'
 
+import { useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
+
+const VALUE_PROP =
+  'Rust runtime executing untrusted WASM in fully isolated, ephemeral sandboxes — five layers of defense, sub-20ms cold starts.'
 
 const PROMPT_LINES: { glyph: '$' | '>'; text: string }[] = [
   { glyph: '$', text: 'cargo run --release' },
-  { glyph: '>', text: 'wasmtime runtime online · 50 slots pre-warmed' },
-  { glyph: '>', text: 'seccomp-bpf active · 67 syscalls allowed' },
+  { glyph: '>', text: 'wasmtime online · 50 slots pre-warmed' },
   { glyph: '>', text: 'sustained: 9,685 req/s @ p99 19ms' },
 ]
 
@@ -18,27 +21,18 @@ const METRICS = [
 
 const TAGS = ['rust', 'wasmtime', 'tokio', 'axum', 'wasi', 'seccomp-bpf']
 
-const STORY_BEATS: { label: string; text: string }[] = [
-  {
-    label: 'problem',
-    text: 'AI agents need to run untrusted code at scale. Most sandboxes rely on a single enforcement boundary — one bypass and the host is exposed.',
-  },
-  {
-    label: 'approach',
-    text: 'Five independent layers: seccomp BPF at the kernel, OCAP capability policy at the WASI call site, an in-memory VFS for zero host filesystem exposure, a Wasmtime ResourceLimiter that vetoes memory growth, and a regex scrubber on all output. One layer down, four still standing.',
-  },
-  {
-    label: 'built',
-    text: '5,130 lines of Rust — a Wasmtime pool of 50 pre-warmed sandboxes backed by Tokio, a Go orchestrator for load distribution, and a Next.js frontend with an in-browser Rust→WASM compiler so users can write and run code without a local toolchain.',
-  },
-  {
-    label: 'result',
-    text: '9,685 req/s sustained · P99 < 19ms · cold starts under 20ms. Lock-free back-pressure sheds load before saturation with calibrated Retry-After responses at three CPU thresholds.',
-  },
+const DEFENSE_LAYERS = [
+  { label: 'seccomp', detail: '67/18' },
+  { label: 'OCAP', detail: '19 caps' },
+  { label: 'VFS', detail: '256 fd' },
+  { label: 'memory', detail: '50MB' },
+  { label: 'regex', detail: '16 pat' },
 ]
 
 export function IsolatorVCard() {
   const reduce = useReducedMotion()
+  const [hovered, setHovered] = useState(false)
+  const live = hovered && !reduce
 
   return (
     <motion.article
@@ -46,12 +40,14 @@ export function IsolatorVCard() {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-80px' }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#070b1a]/80 font-mono backdrop-blur-xl shadow-[0_0_0_1px_rgba(0,127,255,0.05),0_30px_60px_-20px_rgba(0,0,0,0.7)] transition-shadow duration-500 hover:shadow-[0_0_0_1px_rgba(0,127,255,0.25),0_0_60px_-10px_rgba(0,127,255,0.4),0_30px_60px_-20px_rgba(0,0,0,0.7)]"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="group relative overflow-hidden rounded-2xl border border-white/10 bg-navy-900/80 font-mono backdrop-blur-xl shadow-[0_0_0_1px_rgba(0,127,255,0.05),0_30px_60px_-20px_rgba(0,0,0,0.7)] transition-shadow duration-500 hover:shadow-[0_0_0_1px_rgba(0,127,255,0.25),0_0_60px_-10px_rgba(0,127,255,0.4),0_30px_60px_-20px_rgba(0,0,0,0.7)]"
     >
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
         <motion.div
-          animate={reduce ? undefined : { y: [0, 3] }}
-          transition={{ duration: 0.6, repeat: Infinity, ease: 'linear' }}
+          animate={live ? { y: [0, 3] } : { y: 0 }}
+          transition={live ? { duration: 0.6, repeat: Infinity, ease: 'linear' } : { duration: 0.3 }}
           className="h-[200%] w-full opacity-[0.05]"
           style={{
             backgroundImage:
@@ -61,7 +57,7 @@ export function IsolatorVCard() {
       </div>
 
       <header className="relative flex items-center gap-3 border-b border-white/5 bg-white/[0.02] px-5 py-3">
-        <div className="flex gap-1.5">
+        <div aria-hidden className="flex gap-1.5">
           <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
           <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
           <span className="h-2.5 w-2.5 rounded-full bg-[#007FFF] shadow-[0_0_8px_rgba(0,127,255,0.6)]" />
@@ -75,28 +71,15 @@ export function IsolatorVCard() {
         <span className="text-[10px] uppercase tracking-[0.2em] text-white/30">v0.1.0</span>
       </header>
 
-      <div className="relative space-y-6 px-6 py-7 text-[13px] leading-relaxed text-white/70">
+      <div className="relative space-y-5 px-6 py-6 text-[13px] leading-relaxed text-white/70">
         <div className="font-sans">
           <h3 className="text-[20px] font-medium tracking-tight text-white">Isolator-V</h3>
-          <div className="mt-4 space-y-4">
-            {STORY_BEATS.map((beat, i) => (
-              <motion.div
-                key={beat.label}
-                initial={reduce ? false : { opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-40px' }}
-                transition={{ delay: i * 0.09, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <div className="mb-1 text-[10px] font-medium uppercase tracking-[0.2em] text-accent-light/70">
-                  {beat.label}
-                </div>
-                <p className="text-[12.5px] leading-relaxed text-white/55">{beat.text}</p>
-              </motion.div>
-            ))}
-          </div>
+          <p className="mt-2 text-balance text-[13px] leading-relaxed text-white/60">
+            {VALUE_PROP}
+          </p>
         </div>
 
-        <div className="space-y-1.5">
+        <div aria-hidden className="space-y-1.5">
           {PROMPT_LINES.map((line, i) => (
             <motion.div
               key={i}
@@ -115,19 +98,25 @@ export function IsolatorVCard() {
           <div className="flex gap-3">
             <span className="text-[#007FFF]">$</span>
             <motion.span
-              animate={reduce ? undefined : { opacity: [1, 1, 0, 0] }}
-              transition={{ duration: 1.1, repeat: Infinity, ease: 'linear', times: [0, 0.5, 0.5, 1] }}
+              animate={live ? { opacity: [1, 1, 0, 0] } : { opacity: 0.4 }}
+              transition={
+                live
+                  ? { duration: 1.1, repeat: Infinity, ease: 'linear', times: [0, 0.5, 0.5, 1] }
+                  : { duration: 0.3 }
+              }
               className="inline-block h-[1.05em] w-[7px] translate-y-[2px] bg-[#007FFF]/90"
             />
           </div>
         </div>
 
-        <div className="space-y-2.5 rounded-md border border-white/5 bg-black/30 p-4">
-          <div className="text-[10px] uppercase tracking-[0.2em] text-white/30">[ benchmarks ]</div>
+        <div className="space-y-2.5 rounded-md border border-white/5 bg-navy-950/60 p-4">
+          <div aria-hidden className="text-[10px] uppercase tracking-[0.2em] text-white/30">
+            [ benchmarks ]
+          </div>
           {METRICS.map((m, i) => (
             <div key={m.label} className="flex items-center gap-3 text-[12px]">
               <span className="w-24 shrink-0 text-white/45">{m.label}</span>
-              <div className="flex flex-1 gap-[2px]">
+              <div aria-hidden className="flex flex-1 gap-[2px]">
                 {Array.from({ length: 10 }).map((_, j) => {
                   const on = j < m.filled
                   return (
@@ -168,29 +157,21 @@ export function IsolatorVCard() {
 
       <footer className="relative flex items-center justify-between border-t border-white/5 bg-white/[0.02] px-5 py-3 text-[11px]">
         <div className="flex items-center gap-2.5 text-white/45">
-          <div className="relative flex items-end gap-[3px]">
-            {[
-              { label: 'seccomp', detail: '67/18' },
-              { label: 'OCAP', detail: '19 caps' },
-              { label: 'VFS', detail: '256 fd' },
-              { label: 'memory', detail: '50MB' },
-              { label: 'regex', detail: '16 pat' },
-            ].map((layer, i) => (
+          <div aria-hidden className="relative flex items-end gap-[3px]">
+            {DEFENSE_LAYERS.map((layer, i) => (
               <span key={layer.label} className="group/bar relative">
                 <motion.span
-                  aria-hidden
-                  animate={reduce ? undefined : { opacity: [0.35, 1, 0.35] }}
-                  transition={{
-                    duration: 2.4,
-                    repeat: Infinity,
-                    delay: i * 0.18,
-                    ease: 'easeInOut',
-                  }}
+                  animate={live ? { opacity: [0.35, 1, 0.35] } : { opacity: 0.6 }}
+                  transition={
+                    live
+                      ? { duration: 2.4, repeat: Infinity, delay: i * 0.18, ease: 'easeInOut' }
+                      : { duration: 0.3 }
+                  }
                   className="block h-3 w-[3px] rounded-sm bg-[#007FFF] transition-transform duration-150 group-hover/bar:scale-y-125"
                 />
                 <span
                   role="tooltip"
-                  className="pointer-events-none absolute -top-[34px] left-1/2 z-10 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-sm border border-white/10 bg-[#050814]/95 px-1.5 py-1 font-mono text-[9px] uppercase tracking-[0.16em] opacity-0 shadow-[0_8px_20px_-8px_rgba(0,0,0,0.8)] backdrop-blur-sm transition-opacity duration-200 group-hover/bar:opacity-100"
+                  className="pointer-events-none absolute -top-[34px] left-1/2 z-10 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-sm border border-white/10 bg-navy-950/95 px-1.5 py-1 font-mono text-[9px] uppercase tracking-[0.16em] opacity-0 shadow-[0_8px_20px_-8px_rgba(0,0,0,0.8)] backdrop-blur-sm transition-opacity duration-200 group-hover/bar:opacity-100"
                 >
                   <span className="text-[#7ab5ff]">{layer.label}</span>
                   <span className="text-white/35">·</span>
@@ -209,6 +190,7 @@ export function IsolatorVCard() {
         >
           view source
           <svg
+            aria-hidden
             width="10"
             height="10"
             viewBox="0 0 10 10"
