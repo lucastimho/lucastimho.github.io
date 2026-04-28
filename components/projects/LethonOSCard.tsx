@@ -8,10 +8,11 @@ const VALUE_PROP =
   'Self-governing memory for LLM agents. Three tiers prune by utility score; the safety constitution lives in a separate, immutable tier.'
 
 const ROW_HEIGHT = 44
+// Demote-token is h-1.5 (6px) → centered when top = row-center - 3
 const DOT_TOP_BY_TIER = [
-  ROW_HEIGHT * 1 + ROW_HEIGHT / 2 - 4,
-  ROW_HEIGHT * 2 + ROW_HEIGHT / 2 - 4,
-  ROW_HEIGHT * 3 + ROW_HEIGHT / 2 - 4,
+  ROW_HEIGHT * 1 + ROW_HEIGHT / 2 - 3,
+  ROW_HEIGHT * 2 + ROW_HEIGHT / 2 - 3,
+  ROW_HEIGHT * 3 + ROW_HEIGHT / 2 - 3,
 ] as const
 
 const UTILITY_RINGS: Record<string, number[]> = {
@@ -199,7 +200,7 @@ export function LethonOSCard() {
                   }
                 : { duration: 0.3 }
             }
-            className="pointer-events-none absolute right-3 left-auto top-0 h-2 w-2 rounded-full bg-[#007FFF] shadow-[0_0_8px_rgba(0,127,255,0.85)]"
+            className="pointer-events-none absolute left-4 top-0 h-1.5 w-1.5 rounded-full bg-[#007FFF] shadow-[0_0_8px_rgba(0,127,255,0.85)]"
           />
         </div>
 
