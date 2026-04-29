@@ -19,7 +19,7 @@ export default function Home() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-70" />
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
             </span>
-            Available for full-time, May 2026
+            Open to work, May 2026
           </div>
 
           <h1 className="mt-6 text-balance text-[56px] font-semibold leading-[1.02] tracking-tight text-white sm:text-[72px]">
